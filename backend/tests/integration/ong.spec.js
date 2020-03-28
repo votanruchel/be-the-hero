@@ -4,7 +4,7 @@ const connection = require('../../src/database/connection')
 
 
 describe('ONG',() =>{
-    beforeEach(async ()=>{
+    beforeAll(async ()=>{
         await connection.migrate.rollback();
         await connection.migrate.latest();
     })
@@ -12,17 +12,41 @@ describe('ONG',() =>{
     afterAll(async () => {
         await connection.destroy();
     })
+    let ONGid,incidentId;
     it('should be able to create a new ONG', async () =>{
-        const response = await request(app)
+        const responseONG = await request(app)
         .post('/ongs')
         .send({
-            name: "teste",
-            email: "contact@teste.com",
+            name: "ONG Name",
+            email: "contact@ong.com.br",
             whatsapp: "54545454544",
-            city: "Rio do Sul",
-            uf: "SC"
+            city: "Rio Grande do Sul",
+            uf: "RS"
+        });
+        expect(responseONG.body).toHaveProperty('id');
+        expect(responseONG.body.id).toHaveLength(8);
+        ONGid = responseONG.body.id;
+    });
+
+    it('should be able create a new Incident', async () =>{
+        const response = await request(app)
+        .post('/incidents')
+        .set({authorization: ONGid})
+        .send({
+            title: "Test Incident",
+            description: "Description of test incident",
+            value: 99
         });
         expect(response.body).toHaveProperty('id');
-        expect(response.body.id).toHaveLength(8);
-    });
+        incidentId = response.body.id;
+    })
+
+    it('should be able delete Incident', async () =>{
+         await request(app)
+        .delete(`/incidents/${incidentId}`)
+        .set({authorization: ONGid})
+        .expect(204);
+    })
+    
+    
 })

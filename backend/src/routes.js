@@ -8,7 +8,11 @@ const SessionController = require('./controllers/SessionController');
 
 const routes = express.Router();
 
-routes.post('/sessions',SessionController.create)
+routes.post('/sessions',celebrate({
+    [Segments.BODY]: Joi.object({
+        id: Joi.string().length(8),
+    })
+}),SessionController.create)
 
 routes.get('/ongs',OngController.index)
 
@@ -24,11 +28,22 @@ routes.post('/ongs',celebrate({
 
 routes.get('/profile',celebrate({
     [Segments.HEADERS]: Joi.object({      
-        authorization: Joi.string().required()   
+        authorization: Joi.string().required().length(8)   
     }).unknown(),
 }),ProfileController.index)
 
-routes.post('/incidents',IncidentController.create)
+routes.post('/incidents', celebrate({
+    [Segments.BODY]: Joi.object().keys({
+        title: Joi.string().required(),
+        description: Joi.string().required(),
+        value: Joi.number().required(),
+    }),
+    [Segments.HEADERS]: Joi.object({
+        authorization: Joi.string().required().length(8),
+    }).unknown()
+}),IncidentController.create)
+
+
 routes.get('/incidents',celebrate({
     [Segments.QUERY]: Joi.object().keys({
         page: Joi.number().required()
