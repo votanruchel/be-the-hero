@@ -30,7 +30,7 @@ export default function Profile(){
                     Authorization: ongId
                 }
             });
-
+            alert('Deletado com sucesso!')
             setIncidents(incidents.filter(incident => incident.id !== id))
         } catch (error) {
             alert('Erro ao deletar caso, tente novamente')
