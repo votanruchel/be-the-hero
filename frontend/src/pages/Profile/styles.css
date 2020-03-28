@@ -73,7 +73,11 @@
     margin-bottom: 16px;
     color: #41414D;
 }
-
+.button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .profile-container ul li p + strong{
     margin-top: 32px;
 }
